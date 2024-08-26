@@ -1,14 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import * as os from 'os';
 
 import { GithubService } from '../github/github.service.js';
 
 @Injectable()
 export class FollowBotService {
   private previousFollowers: Set<string> = new Set();
-  private readonly logger = new Logger(FollowBotService.name);
+  private logPath: string;
 
-  constructor(private readonly githubService: GithubService) {}
+  constructor(private readonly githubService: GithubService) {
+    this.logPath = path.join(os.homedir(), 'logs', 'github-follow-bot.log');
+  }
+
+  async log(message: string) {
+    await fs.appendFile(this.logPath, `${new Date().toISOString()} - ${message}\n`);
+  }
 
   @Cron(CronExpression.EVERY_HOUR)
   async syncFollowers() {
@@ -25,14 +34,13 @@ export class FollowBotService {
         ...unfollowedFollowers.map(async (follower) => {
           await this.githubService.unfollowUser(follower);
         }),
+        this.log(`New followers: ${newFollowers.join(' ')}`),
+        this.log(`Unfollowed followers: ${unfollowedFollowers.join(' ')}`),
       ]);
-
-      this.logger.log(`Followed: ${newFollowers.join(', ')}`);
-      this.logger.log(`Unfollowed: ${unfollowedFollowers.join(', ')}`);
 
       this.previousFollowers = currentFollowers;
     } catch (e) {
-      this.logger.error(e.stack);
+      console.error(e);
     }
   }
 }
