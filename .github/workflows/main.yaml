@@ -25,7 +25,7 @@ jobs:
       - name: Prepare Deployment Package
         run: |
           mkdir -p deploy
-          cp -r dist  package.json package-lock.json tsconfig.json ecosystem.config.js  deploy/
+          cp -r dist  package.json package-lock.json tsconfig.json ecosystem.config.cjs  deploy/
           tar -czf deploy.tar.gz -C deploy . || (echo "fail - Prepare Deployment Package" && exit 1)
 
       - name: Deploy
@@ -41,6 +41,6 @@ jobs:
             tar -xzf deploy.tar.gz -C ~/github-follow-bot || (echo "fail - Deploy (extract deployment package on server)" && exit 1)
             cd ~/github-follow-bot 
             npm ci || (echo "fail - Deploy (install dependencies on server)" && exit 1) 
-            pm2 reload ecosystem.config.js  || pm2 start ecosystem.config.js || (echo "fail - Deploy (start/reload application with PM2)" && exit 1)
+            pm2 reload ecosystem.config.cjs  || pm2 start ecosystem.config.cjs || (echo "fail - Deploy (start/reload application with PM2)" && exit 1)
             rm -f ~/deploy.tar.gz || (echo "fail - Deploy (remove deployment package)" && exit 1)' || (echo "fail - Deploy (execute commands on server)" && exit 1)
           rm -f private_key
