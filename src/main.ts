@@ -4,13 +4,29 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'fs';
+import path from 'path';
 
 import { AppModule } from './app.module.js';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor.js';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: ['error', 'warn', 'log'] });
+
+  const logDir = path.join(process.cwd(), 'logs');
+
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+  }
+
+  const logStream = fs.createWriteStream(path.join(logDir, 'github-follow-bot.log'), { flags: 'a' });
+
+  app.useLogger({
+    log: (message) => logStream.write(`${new Date().toISOString()} [LOG] ${message}\n`),
+    error: (message) => logStream.write(`${new Date().toISOString()} [ERROR] ${message}\n`),
+    warn: (message) => logStream.write(`${new Date().toISOString()} [WARN] ${message}\n`),
+  });
 
   const configService = app.get(ConfigService);
 
