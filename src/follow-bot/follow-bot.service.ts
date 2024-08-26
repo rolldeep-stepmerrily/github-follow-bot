@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { GithubService } from 'src/github/github.service.js';
+import { GithubService } from '../github/github.service.js';
 
 @Injectable()
 export class FollowBotService {

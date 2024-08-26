@@ -4,9 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpLoggerMiddleware } from './common/middlewares/http-logger.middleware.js';
 import { GithubModule } from './github/github.module.js';
 import { ConfigProviderModule } from './common/config-provider/config-provider.module.js';
-import { FollowBotService } from './follow-bot/follow-bot.service';
-import { FollowBotModule } from './follow-bot/follow-bot.module';
+
 import Joi from 'joi';
+import { FollowBotModule } from './follow-bot/follow-bot.module.js';
 
 @Module({
   imports: [
@@ -24,7 +24,6 @@ import Joi from 'joi';
     ConfigProviderModule,
     FollowBotModule,
   ],
-  providers: [FollowBotService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
