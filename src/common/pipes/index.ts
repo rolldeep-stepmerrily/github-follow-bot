@@ -1,1 +1,1 @@
-export { ParsePositiveIntPipe } from './parse-positive-int.pipe';
+export { ParsePositiveIntPipe } from './parse-positive-int.pipe.js';

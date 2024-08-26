@@ -14,11 +14,6 @@ export class HttpLoggerMiddleware implements NestMiddleware {
   use(req: IRequest, res: Response, next: NextFunction) {
     const startTime = Date.now();
 
-    if (this.NODE_ENV === 'development') {
-      console.log(req.headers.authorization);
-      console.log(req.body);
-    }
-
     res.on('finish', () => {
       const userIpV4 = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
       const userIpV6 = req.ips.length ? req.ips[0] : req.ip;

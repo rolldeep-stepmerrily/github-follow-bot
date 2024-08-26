@@ -1,1 +1,1 @@
-export { TransformInterceptor } from './transform.interceptor';
+export { TransformInterceptor } from './transform.interceptor.js';
