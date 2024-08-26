@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { GithubService } from '../github/github.service.js';
 
@@ -8,6 +9,7 @@ export class FollowBotService {
 
   constructor(private readonly githubService: GithubService) {}
 
+  @Cron(CronExpression.EVERY_6_HOURS)
   async syncFollowers() {
     const currentFollowers = new Set(await this.githubService.findFollowers());
 

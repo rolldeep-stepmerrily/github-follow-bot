@@ -7,6 +7,7 @@ import { ConfigProviderModule } from './common/config-provider/config-provider.m
 
 import Joi from 'joi';
 import { FollowBotModule } from './follow-bot/follow-bot.module.js';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { FollowBotModule } from './follow-bot/follow-bot.module.js';
     GithubModule,
     ConfigProviderModule,
     FollowBotModule,
+    ScheduleModule.forRoot(),
   ],
 })
 export class AppModule implements NestModule {
