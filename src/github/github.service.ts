@@ -19,9 +19,7 @@ export class GithubService {
       username: this.username,
     });
 
-    const follwers = response.data.map((user) => user.login);
-
-    return { follwers };
+    return response.data.map((follower) => follower.login);
   }
 
   async followUser(username: string) {
