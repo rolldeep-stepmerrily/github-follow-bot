@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Octokit } from '@octokit/rest';
 
 @Injectable()
@@ -15,18 +15,36 @@ export class GithubService {
   }
 
   async findFollowers() {
-    const response = await this.octokit.users.listFollowersForUser({
-      username: this.username,
-    });
+    try {
+      const response = await this.octokit.users.listFollowersForUser({
+        username: this.username,
+      });
 
-    return response.data.map((follower) => follower.login);
+      return response.data.map((follower) => follower.login);
+    } catch (e) {
+      console.error(e);
+
+      throw new InternalServerErrorException();
+    }
   }
 
   async followUser(username: string) {
-    await this.octokit.users.follow({ username });
+    try {
+      await this.octokit.users.follow({ username });
+    } catch (e) {
+      console.error(e);
+
+      throw new InternalServerErrorException();
+    }
   }
 
   async unfollowUser(username: string) {
-    await this.octokit.users.unfollow({ username });
+    try {
+      await this.octokit.users.unfollow({ username });
+    } catch (e) {
+      console.error(e);
+
+      throw new InternalServerErrorException();
+    }
   }
 }
