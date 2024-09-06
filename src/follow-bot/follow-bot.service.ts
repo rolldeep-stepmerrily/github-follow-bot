@@ -31,4 +31,12 @@ export class FollowBotService {
       console.error(e);
     }
   }
+
+  async syncCurrentFollowers() {
+    try {
+      this.previousFollowers = new Set(await this.githubService.findFollowers());
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
