@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { GithubService } from '../github/github.service.js';
@@ -29,6 +29,10 @@ export class FollowBotService {
       this.previousFollowers = currentFollowers;
     } catch (e) {
       console.error(e);
+
+      await this.syncCurrentFollowers();
+
+      throw new InternalServerErrorException();
     }
   }
 
