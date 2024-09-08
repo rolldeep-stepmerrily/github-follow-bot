@@ -16,6 +16,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         PORT: Joi.number().default(3067),
         GITHUB_TOKEN: Joi.string().required(),
         GITHUB_USERNAME: Joi.string().required(),
+        EXCEPTIONAL_FOLLOWINGS: Joi.string().default(''),
       }),
       envFilePath: '.env',
       isGlobal: true,

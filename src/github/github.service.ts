@@ -18,9 +18,25 @@ export class GithubService {
     try {
       const response = await this.octokit.users.listFollowersForUser({
         username: this.username,
+        per_page: 100,
       });
 
-      return response.data.map((follower) => follower.login);
+      return Promise.all(response.data.map((follower) => follower.login));
+    } catch (e) {
+      console.error(e);
+
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findFollowing() {
+    try {
+      const response = await this.octokit.users.listFollowingForUser({
+        username: this.username,
+        per_page: 100,
+      });
+
+      return Promise.all(response.data.map((following) => following.login));
     } catch (e) {
       console.error(e);
 
@@ -30,6 +46,7 @@ export class GithubService {
 
   async followUser(username: string) {
     try {
+      console.log(`Following ${username}`);
       await this.octokit.users.follow({ username });
     } catch (e) {
       console.error(e);
@@ -40,6 +57,7 @@ export class GithubService {
 
   async unfollowUser(username: string) {
     try {
+      console.log(`Unfollowing ${username}`);
       await this.octokit.users.unfollow({ username });
     } catch (e) {
       console.error(e);

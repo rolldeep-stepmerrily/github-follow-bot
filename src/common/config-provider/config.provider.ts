@@ -15,3 +15,4 @@ export const NODE_ENV = createConfigProvider<string>('NODE_ENV');
 export const PORT = createConfigProvider<number>('PORT', 'number');
 export const GITHUB_TOKEN = createConfigProvider<string>('GITHUB_TOKEN');
 export const GITHUB_USERNAME = createConfigProvider<string>('GITHUB_USERNAME');
+export const EXCEPTIONAL_FOLLOWINGS = createConfigProvider<string>('EXCEPTIONAL_FOLLOWINGS');

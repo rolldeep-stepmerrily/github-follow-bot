@@ -4,5 +4,6 @@ declare namespace NodeJS {
     PORT: number;
     GITHUB_TOKEN: string;
     GITHUB_USERNAME: string;
+    EXCEPTIONAL_FOLLOWINGS: string;
   }
 }

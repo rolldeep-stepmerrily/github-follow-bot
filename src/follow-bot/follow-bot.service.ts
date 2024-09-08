@@ -1,46 +1,43 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { GithubService } from '../github/github.service.js';
 
 @Injectable()
 export class FollowBotService {
-  private previousFollowers: Set<string> = new Set();
-
-  constructor(private readonly githubService: GithubService) {}
+  constructor(
+    private readonly githubService: GithubService,
+    @Inject('EXCEPTIONAL_FOLLOWINGS') private readonly EXCEPTIONAL_FOLLOWINGS: string,
+  ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
   async syncFollowers() {
     try {
       const currentFollowers = new Set(await this.githubService.findFollowers());
 
-      const newFollowers = [...currentFollowers].filter((follower) => !this.previousFollowers.has(follower));
-      const unfollowedFollowers = [...this.previousFollowers].filter((follower) => !currentFollowers.has(follower));
+      const currentFollowing = new Set(await this.githubService.findFollowing());
 
-      await Promise.all([
-        ...newFollowers.map(async (follower) => {
-          await this.githubService.followUser(follower);
-        }),
-        ...unfollowedFollowers.map(async (follower) => {
-          await this.githubService.unfollowUser(follower);
-        }),
-      ]);
+      //30명씩만 가져오고, 최대는 100이니 100팔로워가 넘어가면 수정하기
 
-      this.previousFollowers = currentFollowers;
+      const toFollow = [...currentFollowers].filter((follower) => !currentFollowing.has(follower));
+
+      toFollow.forEach(async (follower) => {
+        await this.githubService.followUser(follower);
+      });
+
+      const exceptionalFollowings = new Set(this.EXCEPTIONAL_FOLLOWINGS.split('|'));
+
+      const toUnfollow = [...currentFollowing].filter(
+        (following) => !currentFollowers.has(following) && !exceptionalFollowings.has(following),
+      );
+
+      toUnfollow.forEach(async (following) => {
+        await this.githubService.unfollowUser(following);
+      });
     } catch (e) {
       console.error(e);
-
-      await this.syncCurrentFollowers();
 
       throw new InternalServerErrorException();
-    }
-  }
-
-  async syncCurrentFollowers() {
-    try {
-      this.previousFollowers = new Set(await this.githubService.findFollowers());
-    } catch (e) {
-      console.error(e);
     }
   }
 }
